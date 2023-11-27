@@ -12,8 +12,23 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/factory/containers/protos/CardboardBox.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/vehicles/protos/tesla/TeslaModel3Simple.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/trees/protos/Pine.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/trees/protos/Forest.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/robots/dji/mavic/protos/Mavic2Pro.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/buildings/protos/Auditorium.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/buildings/protos/HollowBuilding.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/buildings/protos/Warehouse.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/buildings/protos/UBuilding.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/buildings/protos/StripBuilding.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/buildings/protos/TheThreeTowers.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/freight/protos/IntermodalContainer.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/factory/forklift/protos/Forklift.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/objects/freight/protos/IntermodalOfficeContainer.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/humans/pedestrian/protos/Pedestrian.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/vehicles/protos/toyota/ToyotaPrius.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/vehicles/protos/range_rover/RangeRoverSportSVR.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/vehicles/protos/lincoln/LincolnMKZ.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/vehicles/protos/bmw/BmwX5.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/vehicles/protos/generic/Truck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2022b/projects/vehicles/protos/tesla/TeslaModel3.proto"
 
 WorldInfo {
   info [
@@ -28,8 +43,8 @@ WorldInfo {
   }
 }
 Viewpoint {
-  orientation -0.03132509357312057 -0.004229724205027985 0.9995002991224087 2.901671340011777
-  position 3.392036511082617 -0.9278446049316036 0.7513423909480075
+  orientation -0.1014841925216188 -0.015410812613416059 0.9947177818471072 3.2871427783509493
+  position 19.814065960125912 -1.888789196546354 3.427534584189898
   near 0.2
   follow "Mavic 2 PRO"
   followSmoothness 0.2
@@ -44,6 +59,144 @@ Floor {
   tileSize 6 6
   appearance SandyGround {
   }
+}
+TeslaModel3 {
+  translation 133.964 45.8772 0.4
+  rotation 0 0 -1 2.3562
+  name "vehicle(8)"
+}
+Truck {
+  translation 116.938 33.0461 0.5
+  rotation 0 0 -1 2.618
+  name "vehicle(6)"
+}
+LincolnMKZ {
+  translation 79.2539 10.1754 0.4
+  rotation 0 0 1 -2.6179953071795863
+  name "vehicle(3)"
+}
+RangeRoverSportSVR {
+  translation 29.4721 -6.27852 0.4
+  rotation 0 0 1 0.261799
+  name "vehicle(2)"
+}
+ToyotaPrius {
+  translation 52.42 0 0.4
+  rotation 0 0 1 0.261799
+  name "vehicle(1)"
+}
+Pedestrian {
+  translation 128.924 36.0879 1.27
+  rotation 0 0 1 0.523598
+  name "pedestrian(8)"
+}
+Pedestrian {
+  translation 106.573 33.2828 1.27
+  rotation 0 0 1 1.309
+  name "pedestrian(7)"
+}
+Pedestrian {
+  translation -8.79 0 1.27
+  name "pedestrian(6)"
+}
+Pedestrian {
+  translation 85.2244 8.48833 1.27
+  rotation 0 0 1 0.523598
+  name "pedestrian(5)"
+}
+Pedestrian {
+  translation 9.41 0 1.27
+  rotation 0 0 1 -0.523595307179586
+  name "pedestrian(3)"
+}
+Pedestrian {
+  translation 67.12 8.56 1.27
+  name "pedestrian(2)"
+}
+Pedestrian {
+  translation 28.04 0 1.27
+  name "pedestrian(1)"
+}
+Pedestrian {
+  translation 45.45 -10.7 1.27
+}
+IntermodalOfficeContainer {
+  translation -19.7368 21.994 0
+  rotation 0 0 1 1.309
+}
+IntermodalContainer {
+  translation -36.1934 32.8301 0
+  rotation 0 0 -1 0.523598
+  name "container(6)"
+}
+IntermodalContainer {
+  translation -42.4891 -8.995 0
+  rotation 0 0 1 0.523599
+  name "container(5)"
+}
+Forklift {
+  translation -31.09 0 0.81
+  name "forklift(1)"
+}
+IntermodalContainer {
+  translation -44.49 0 0
+  name "container(4)"
+}
+IntermodalContainer {
+  translation -30.7699 -17.765 0
+  rotation 0 0 1 -2.6179953071795863
+  name "container(3)"
+}
+IntermodalContainer {
+  translation 62.045 -27.7736 0
+  rotation 0 0 1 -1.047195307179586
+  name "container(2)"
+}
+IntermodalContainer {
+  translation 44.4114 -33.4504 0
+  rotation 0 0 1 -1.3089953071795861
+  name "container(1)"
+}
+Forklift {
+  translation 0 -11.3 0.81
+}
+IntermodalContainer {
+  translation 56.3 -30.5186 0
+  rotation 0 0 1 2.0944
+}
+TheThreeTowers {
+  translation 97.5918 43.9359 0
+  rotation 0 0 1 -1.0472053071795866
+}
+Warehouse {
+  translation 51.394 17.2825 0
+  rotation 0 0 1 -1.047195307179586
+  name "warehouse(2)"
+}
+StripBuilding {
+  translation 61.8656 -14.0901 0
+  rotation 0 0 1 2.0944
+}
+UBuilding {
+  translation -76.2638 17.7978 0
+  rotation 0 0 1 -0.261795307179586
+}
+Warehouse {
+  translation -29.3268 44.313 0
+  rotation 0 0 1 -1.8325953071795862
+  name "warehouse(1)"
+}
+Warehouse {
+  translation -23.4565 -37.2229 0
+  rotation 0 0 1 1.309
+}
+HollowBuilding {
+  translation 9.38377 19.3082 0
+  rotation 0 0 1 3.14159
+}
+Auditorium {
+  translation 14.4403 -36.0882 0
+  rotation 0 0 -1 -1.5708053071795867
 }
 Road {
   translation -43.8 9.2 0.01
@@ -61,6 +214,15 @@ Road {
   appearance Pavement {
     type "black stone"
   }
+}
+BmwX5 {
+  translation 100.353 22.125 0.4
+  rotation 0 0 1 -2.6179953071795863
+  name "vehicle(4)"
+}
+Pedestrian {
+  translation -27.76 0 1.27
+  name "pedestrian(4)"
 }
 Windmill {
   translation -43.8656 -19.8433 0
@@ -81,8 +243,8 @@ Windmill {
   name "windmill(3)"
 }
 SmallManor {
-  translation -50.35 11.25 0
-  rotation 0 0 -1 0.392394
+  translation -63.084 -19.5191 0
+  rotation 0 0 1 0.654804
 }
 SquareManhole {
   translation 0 0 -0.03
@@ -124,30 +286,6 @@ Pine {
   translation -9.37029 14.0209 0
   rotation 0 0 1 -2.6179953071795863
   name "pine tree(2)"
-}
-Forest {
-  translation 0 0 -0.01
-  shape [
-    200 200
-    200 0
-    50 0
-    50 50
-    -50 50
-    -50 -50
-    50 -50
-    50 0
-    200 0
-    200 -200
-    -200 -200
-    -200 200
-  ]
-  density 0.01
-  type "cherry tree"
-  randomSeed 1
-  maxHeight 12
-  minHeight 6
-  maxRadius 6
-  minRadius 3
 }
 Mavic2Pro {
   translation 0 0 0.1
