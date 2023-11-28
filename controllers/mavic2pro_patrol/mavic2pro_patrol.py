@@ -19,10 +19,15 @@
 
 from controller import Robot
 import sys
-try:
-    import numpy as np
-except ImportError:
-    sys.exit("Warning: 'numpy' module not found.")
+import numpy as np
+from ultralytics import YOLO
+import cv2
+
+model = YOLO("./model/best.pt")
+model.cuda()
+isDetected = False
+
+
 
 
 def clamp(value, value_min, value_max):
@@ -40,11 +45,14 @@ class Mavic (Robot):
 
     MAX_YAW_DISTURBANCE = 0.4
     MAX_PITCH_DISTURBANCE = -1
+    ALTITUDE_VALUE = 32
+    CAMERA_PITCH_POS = 0.6
     # Precision between the target position and the robot position in meters
     target_precision = 0.5
 
     def __init__(self):
         Robot.__init__(self)
+        
 
         self.time_step = int(self.getBasicTimeStep())
 
@@ -63,7 +71,8 @@ class Mavic (Robot):
         self.rear_left_motor = self.getDevice("rear left propeller")
         self.rear_right_motor = self.getDevice("rear right propeller")
         self.camera_pitch_motor = self.getDevice("camera pitch")
-        self.camera_pitch_motor.setPosition(0.4)
+        self.camera_pitch_motor.setPosition(self.CAMERA_PITCH_POS)
+        
         motors = [self.front_left_motor, self.front_right_motor,
                   self.rear_left_motor, self.rear_right_motor]
         for motor in motors:
@@ -75,6 +84,18 @@ class Mavic (Robot):
         self.target_index = 0
         self.target_altitude = 0
 
+    def intializeYolo(self):
+        self.model = YOLO('./model/best.pt')
+        self.model.cuda()
+    
+    def predictYolo(self, image):
+        global model, isDetected
+        prediction = model.predict(image, save=False, show=True, conf=0.7)
+        isDetected = True
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+        
     def set_position(self, pos):
         """
         Set the new absolute position of the robot
@@ -94,15 +115,23 @@ class Mavic (Robot):
             yaw_disturbance (float): yaw disturbance (negative value to go on the right)
             pitch_disturbance (float): pitch disturbance (negative value to go forward)
         """
-
         if self.target_position[0:2] == [0, 0]:  # Initialization
             self.target_position[0:2] = waypoints[0]
             if verbose_target:
                 print("First target: ", self.target_position[0:2])
+        
+        # if self.target_position[0:2] == [0, 0]:  # Initialization
+        #     self.target_position[0:2] = waypoints[0]
+        #     if verbose_target:
+        #         print("First target: ", self.target_position[0:2])
 
         # if the robot is at the position with a precision of target_precision
         if all([abs(x1 - x2) < self.target_precision for (x1, x2) in zip(self.target_position, self.current_pose[0:2])]):
 
+            # self.target_index += 1
+            # if self.target_index > len(waypoints) - 1:
+            #     self.target_index = 0
+            # self.target_position[0:2] = waypoints[self.target_index]
             self.target_index += 1
             if self.target_index > len(waypoints) - 1:
                 self.target_index = 0
@@ -133,18 +162,46 @@ class Mavic (Robot):
             print("remaning angle: {:.4f}, remaning distance: {:.4f}".format(
                 angle_left, distance_left))
         return yaw_disturbance, pitch_disturbance
+    
+    def setMotorsVelocity(self,  altitude, roll_disturbance, pitch_disturbance,yaw_disturbance, roll, pitch, yaw, roll_acceleration, pitch_acceleration):
+        roll_input = self.K_ROLL_P * clamp(roll, -1, 1) + roll_acceleration + roll_disturbance
+        pitch_input = self.K_PITCH_P * clamp(pitch, -1, 1) + pitch_acceleration + pitch_disturbance
+        yaw_input = yaw_disturbance
+        clamped_difference_altitude = clamp(self.target_altitude - altitude + self.K_VERTICAL_OFFSET, -1, 1)
+        vertical_input = self.K_VERTICAL_P * pow(clamped_difference_altitude, 3.0)
+
+        front_left_motor_input = self.K_VERTICAL_THRUST + vertical_input - yaw_input + pitch_input - roll_input
+        front_right_motor_input = self.K_VERTICAL_THRUST + vertical_input + yaw_input + pitch_input + roll_input
+        rear_left_motor_input = self.K_VERTICAL_THRUST + vertical_input + yaw_input - pitch_input - roll_input
+        rear_right_motor_input = self.K_VERTICAL_THRUST + vertical_input - yaw_input - pitch_input + roll_input
+
+        self.front_left_motor.setVelocity(front_left_motor_input)
+        self.front_right_motor.setVelocity(-front_right_motor_input)
+        self.rear_left_motor.setVelocity(-rear_left_motor_input)
+        self.rear_right_motor.setVelocity(rear_right_motor_input)
+        
+        
 
     def run(self):
+        global isDetected
         t1 = self.getTime()
+        t2 = self.getTime()
 
         roll_disturbance = 0
         pitch_disturbance = 0
         yaw_disturbance = 0
+        isReached = False
+        isAltitudeReached = False
+
+        width = self.camera.getWidth()
+        height = self.camera.getHeight()
+
+        #self.intializeYolo()
 
         # Specify the patrol coordinates
-        waypoints = [[-30, 20], [-60, 20], [-60, 10], [-30, 5]]
+        waypoints = [[-25, 6], [-11, 115]]
         # target altitude of the robot in meters
-        self.target_altitude = 15
+        self.target_altitude = self.ALTITUDE_VALUE
 
         while self.step(self.time_step) != -1:
 
@@ -157,25 +214,23 @@ class Mavic (Robot):
             if altitude > self.target_altitude - 1:
                 # as soon as it reach the target altitude, compute the disturbances to go to the given waypoints.
                 if self.getTime() - t1 > 0.1:
-                    #yaw_disturbance, pitch_disturbance = self.move_to_target(
-                        #waypoints)
+                    yaw_disturbance, pitch_disturbance = self.move_to_target(
+                        waypoints, True, True)
+                    
+                    if y_pos > 50 and (not isDetected):
+                        image = np.frombuffer(self.camera.getImage(), np.uint8).reshape((height, width, 4))
+                        prediction = self.predictYolo(cv2.cvtColor(image, cv2.COLOR_RGBA2BGR))
+                    
+                    if self.getTime() - t2 > 10:
+                        if isDetected:
+                            isDetected = False
+                        t2  = self.getTime()
+
                     t1 = self.getTime()
+                
+            self.setMotorsVelocity( altitude, roll_disturbance, pitch_disturbance, yaw_disturbance, roll, pitch, yaw, roll_acceleration, pitch_acceleration)
 
-            roll_input = self.K_ROLL_P * clamp(roll, -1, 1) + roll_acceleration + roll_disturbance
-            pitch_input = self.K_PITCH_P * clamp(pitch, -1, 1) + pitch_acceleration + pitch_disturbance
-            yaw_input = yaw_disturbance
-            clamped_difference_altitude = clamp(self.target_altitude - altitude + self.K_VERTICAL_OFFSET, -1, 1)
-            vertical_input = self.K_VERTICAL_P * pow(clamped_difference_altitude, 3.0)
-
-            front_left_motor_input = self.K_VERTICAL_THRUST + vertical_input - yaw_input + pitch_input - roll_input
-            front_right_motor_input = self.K_VERTICAL_THRUST + vertical_input + yaw_input + pitch_input + roll_input
-            rear_left_motor_input = self.K_VERTICAL_THRUST + vertical_input + yaw_input - pitch_input - roll_input
-            rear_right_motor_input = self.K_VERTICAL_THRUST + vertical_input - yaw_input - pitch_input + roll_input
-
-            self.front_left_motor.setVelocity(front_left_motor_input)
-            self.front_right_motor.setVelocity(-front_right_motor_input)
-            self.rear_left_motor.setVelocity(-rear_left_motor_input)
-            self.rear_right_motor.setVelocity(rear_right_motor_input)
+            
 
 
 # To use this controller, the basicTimeStep should be set to 8 and the defaultDamping
