@@ -1,5 +1,3 @@
-**README.md**
-
 # Drone-based Encroachment Detection POC Project
 
 Welcome to the Drone-based Encroachment Detection POC (Proof of Concept) Project! This project was developed as part of the CSE564 Software Design class project at Arizona State University.
